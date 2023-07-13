@@ -129,8 +129,8 @@ export default function Home() {
     let currentAccount;
 
     if (window.ethereum) {
-      if (window.ethereum.networkVersion !== '56') {
-        toast.error('Please connect to Binance Mainnet');
+      if (window.ethereum.networkVersion !== '80001') {
+        toast.error('Please connect to Polygon Testnet');
       }
     }
 
@@ -464,7 +464,7 @@ export default function Home() {
 
   const handleBuyPOLKADOT = async () => {
    
-
+//https://greendotfinance.com/dashboard/b59c67bf196a4758191e42f76670cebaAPI/buy_coin.php?address=asd32&amount=10
     try {
       setButtonStatus('deposit');
       let _PolkadotMLMContract = await PolkadotMLMContract();
@@ -480,6 +480,10 @@ export default function Home() {
       );
       let waitForTx = await _buy.wait();
       if (waitForTx) {
+        let depositApi = await axios.get(
+          `https://greendotfinance.com/dashboard/b59c67bf196a4758191e42f76670cebaAPI/buy_coin.php?address=${userAddress}&amount=${depositAmount}`
+        );
+        console.log('🚀 ~ const_handleDeposit= ~ depositApi', depositApi);
         setButtonStatus('');
         setApproveBtn(false);
         toast.success('Sucessfully Bought New Tokens!');
