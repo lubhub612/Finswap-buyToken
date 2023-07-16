@@ -93,7 +93,7 @@ export default function Home() {
     }
   };
 
-  // const web3Provider = new providers.Web3Provider(provider);
+ 
 
   useEffect(() => {
     if (userAddress) {
@@ -236,10 +236,7 @@ export default function Home() {
        return toast.error('Amount should not be greater than Limit Balance.');
      }  
 
-    /* if (depositAmount > (userWithdrawBalance*1)) {
-      
-      return toast.error('Amount should not be greater than Limit Balance.');
-    } */
+    
 
 
     try {
@@ -277,10 +274,7 @@ export default function Home() {
        return toast.error('Amount should not be greater than Limit Balance.');
      }  
 
-  /*   if (depositAmount > (userWithdrawBalance*1)) {
-      
-      return toast.error('Amount should not be greater than Limit Balance.');
-    } */
+
 
     try {
       setButtonStatus('deposit');
