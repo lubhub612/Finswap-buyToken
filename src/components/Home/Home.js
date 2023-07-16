@@ -25,6 +25,7 @@ export default function Home() {
   const [withdrawValue, setWithdrawValue] = useState(0);
   const [handleWithdrawLoader, setHandleWithdrawLoader] = useState(false);
   const [userWithdrawBalance, setUserWithdrawBalance] = useState(0);
+  const [userBuyLimitBalance, setUserBuyLimitBalance] = useState(0);
   const [userValid, setUserValid] = useState(false);
   const [tokenPrice, setTokePrice] = useState(0);
   const [show, setShow] = useState(false);
@@ -99,6 +100,7 @@ export default function Home() {
   useEffect(() => {
     if (userAddress) {
       getUserWalletBalance();
+      getUserBuyLimitBalance();
     }
     return () => {};
   }, [userAddress]);
@@ -174,7 +176,35 @@ export default function Home() {
     }
   };
 
-  
+  const getUserBuyLimitBalance = async () => {
+
+    //https://greendotfinance.com/dashboard/b59c67bf196a4758191e42f76670cebaAPI/coinbalance.php?address1=111
+    //https://greendotfinance.com/dashboard/b59c67bf196a4758191e42f76670cebaAPI/sell_coin_limit.php?address2=0xDCC5E686892315BF80541721DC12Daf3EfBEb257
+    try {
+    
+     let url = `https://greendotfinance.com/dashboard/b59c67bf196a4758191e42f76670cebaAPI/coinbalance.php?address1=${userAddress}`;
+      let bal = await axios.get(url).then((res, err) => {
+        if (err) {
+          setUserValid(false);
+          console.log('err', err);
+        }
+        if (res) {
+          console.log('🚀 ~ bal ~ res', res);
+          setUserValid(true);
+          return res;
+        }
+      });
+      let stribal = bal.data[2];
+      let  ans = stribal.split(":").pop();
+      if (bal.data == 'Not Valid') {
+        setUserBuyLimitBalance(0);
+      } else {
+        setUserBuyLimitBalance(ans);
+      }
+    } catch (error) {
+      console.log('🚀 ~ getUserWalletBalance ~ error', error);
+    }
+  };
   
   useEffect(() => {
     getAdmin();
@@ -200,6 +230,20 @@ export default function Home() {
 
  
   const handleApprovePOLKADOT = async () => {
+    if (!userAddress) {
+      return toast.error('Please connect Metamask first.');
+    }
+    
+    if (depositAmount > (userBuyLimitBalance*1)) {
+      
+       return toast.error('Amount should not be greater than Limit Balance.');
+     }  
+
+    /* if (depositAmount > (userWithdrawBalance*1)) {
+      
+      return toast.error('Amount should not be greater than Limit Balance.');
+    } */
+
 
     try {
       setButtonStatus('approve');
@@ -227,7 +271,19 @@ export default function Home() {
   };
 
   const handleBuyPOLKADOT = async () => {
-   
+    if (!userAddress) {
+      return toast.error('Please connect Metamask first.');
+    }
+    
+    if (depositAmount > (userBuyLimitBalance*1)) {
+      
+       return toast.error('Amount should not be greater than Limit Balance.');
+     }  
+
+  /*   if (depositAmount > (userWithdrawBalance*1)) {
+      
+      return toast.error('Amount should not be greater than Limit Balance.');
+    } */
 
     try {
       setButtonStatus('deposit');
@@ -547,6 +603,7 @@ export default function Home() {
                           >
                             DEBIT : {depositAmount} Polkadot 
                           </p>
+                          <p className='text-white pt-2' style={{fontSize:'12px'}}>Limit Balance  : {userBuyLimitBalance} Polkadot </p>
                         </div>
                       </div>
                     </div>
